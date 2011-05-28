@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>jRegex - Visual Regular Expressions</title>
+		<meta name="description" content="Visual JavaScript Regular Expression Tester" />
+		<meta name="author" content="Phil Parsons" />
+
+		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+		<!--[if lte IE 8]>
+			<script>
+				var html5Elements = ["header", "footer", "rhtext"];
+				for (var i = 0; i < html5Elements.length; ++i)
+					document.createElement(html5Elements[i]);
+			</script>
+		<![endif]-->
+		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Orbitron:regular,bold' rel='stylesheet' type='text/css'>
+		<style>
+			html { min-height: 100% }
+			body {
+				font: 0.9em/1.2em 'Inconsolata', arial, sans-serif;
+				background: #EEE;
+				background: -moz-linear-gradient(100% 100% 90deg, #FFF, #EEE);
+				background: -webkit-gradient(linear,center bottom,center top,from(#FFF),to(#EEE));
+			}
+			
+			#wrapper {
+				width: 780px;
+				margin: 0 auto;
+				position: relative;
+				padding: 65px 10px 0;
+			}
+			
+			header {
+				position: absolute;
+				top: 0;
+				left: 10px;
+				width: 100%;
+			}
+			
+			a {
+				text-decoration: none;
+				color: #9145a1;
+			}
+			
+			h1 {
+				font: bold 40px/40px 'Orbitron', arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				color: #AAA;
+			}
+				h1 span {
+					display: block;
+					float: left;
+					font-size: 50px;
+					line-height: 50px;
+					color: #d394e0;
+				}
+				
+			#tagline {
+				font: 10px/10px 'Orbitron', arial, sans-serif;
+				display: block;
+				float: left;
+				margin: 0 0 0 90px;
+				color: #CCC;
+			}
+			
+			#regex-mode-switches {
+				float: right;
+				width: 150px;
+				margin: 0 10px 0 0;
+			}
+			
+			.regex-mode-switch {
+				display: block;
+				float: right;
+				border: solid 1px #CCC;
+				padding: 4px 8px;
+				color: #444;
+				margin: 0 0 0 10px;
+				border-radius: 6px;
+				-moz-box-shadow: 0 0 4px #ddd;
+  			-webkit-box-shadow: 0 0 4px #ddd;
+				box-shadow: 0 0 4px #ddd;
+				background: #ddd;
+				background: -moz-linear-gradient(100% 100% 90deg, #ddd, #fff);
+				background: -webkit-gradient(linear,center bottom,center top,from(#ddd),to(#fff));
+			}
+				.regex-mode-switch:hover {
+					-moz-box-shadow: 0 0 4px #d394e0;
+  				-webkit-box-shadow: 0 0 4px #d394e0;
+					box-shadow: 0 0 4px #d394e0;
+				}
+			
+			.regex-string-field {
+				display: block;
+				width: 574px;
+				border-radius: 6px;
+				border: solid 1px #CCC;
+				font-size: 1.8em;
+				font-family: 'Inconsolata', arial, sans-serif;
+				margin: 0 10px 10px;
+				padding: 2px 8px;
+				outline: 0;
+			}
+				.regex-string-field:focus,
+				#regex-content-area:focus {
+					-moz-box-shadow: 0 0 5px #d394e0;
+  				-webkit-box-shadow: 0 0 5px #d394e0;
+					box-shadow: 0 0 5px #d394e0;
+				}
+				
+			#regex-replace-string {
+				display: none;
+			}
+			
+			rhtext {
+				background-color: #d394e0;
+				color: white;
+			}
+			
+			#regex-option-flags {
+				margin: 0 10px;
+			}
+			
+			#regex-content-area {
+				height: 300px;
+				outline: 0;
+			}
+			
+			#regex-replace-area {
+				display: none;
+				height: 150px;
+			}
+			
+			.regex-content-area {
+				margin: 10px;
+				-moz-box-shadow: 0 4px 6px #999;
+  			-webkit-box-shadow: 0 4px 6px #999;
+				box-shadow: 0 4px 6px #999;
+				border: solid 1px #CCC;
+				padding: 10px;
+				border-radius: 12px;
+				background: white;
+				overflow: auto;
+			}
+			
+			footer {
+				margin: 10px;
+				text-align: right;
+				font-size: .9em;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<div id="wrapper">
+			
+			<header>
+				<h1><span>j</span>Regex</h1>
+				<span id="tagline">Visual Javascript Regular Expressions</span>
+			</header>
+
+			<div id="regex-wrapper">
+			
+				<div id="regex-mode-switches">
+					<a href="##" class="regex-mode-switch" data-mode="replace">Replace</a>
+					<a href="##" class="regex-mode-switch" data-mode="match">Match</a>
+				</div>
+			
+				<input class="regex-string-field" type="text" id="regex-string-builder" placeholder="Regex...">
+				
+				<input class="regex-string-field" type="text" id="regex-replace-string" placeholder="Replace with...">
+				
+				<div id="regex-option-flags">
+					<input class="regex-flag" type="checkbox" id="regex-case-flag" name="regex-case-flag" checked>
+					<label for="regex-case-flag">Case insensitive</label>
+					
+					<input class="regex-flag" type="checkbox" id="regex-global-flag" name="regex-global-flag" checked>
+					<label for="regex-global-flag">Global</label>
+					
+					<input class="regex-flag" type="checkbox" id="regex-multi-flag" name="regex-multi-flag" checked>
+					<label for="regex-multi-flag">Multi line</label>
+				</div>
+				
+				<div id="regex-content-area" class="regex-content-area" contenteditable>
+Although jRegex is not completely finished and in a somewhat beta state I decided to launch it
+to pay homage to (Inter)national Regex Day. To get started just copy your text in here and start building 
+your regular expression above.<br /><br />				
+Happy Regex Day for 1st June 2011!!
+				</div>
+				
+				<div id="regex-replace-area" class="regex-content-area"></div>
+			
+			</div>
+			
+			<footer>
+				Created by <a href="http://www.profilepicture.co.uk">Phil Parsons</a>. Currently tested in IE9, FF4+ and WebKit (Chrome, Safari).
+			</footer>
+			
+		</div>
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script>
+			(function ($) {
+					
+				var rh = {}
+					, mode = "match";
+				
+				rh.setMode = function (ev) {
+					ev.preventDefault();
+					var newMode = $(this).attr("data-mode");
+					if (mode !== newMode) {
+						if (newMode === "replace")
+							rh.goIntoReplaceMode();
+						else rh.goIntoMatchMode();
+						mode = newMode;
+					}
+				}
+				
+				rh.goIntoReplaceMode = function () {
+					$("#regex-replace-string").fadeIn(300, function () {
+						$("#regex-content-area").animate({
+							height: "150px"
+						}, 500, function () {
+							$("#regex-replace-area").fadeIn(500);
+							rh.updateDisplay(null);
+						});
+					});
+				}
+				
+				rh.goIntoMatchMode = function () {
+					$("#regex-replace-string").fadeOut(300, function () {
+						$("#regex-replace-area").fadeOut(500, function () {
+							$("#regex-content-area").animate({
+								height: "300px"
+							}, 500);
+						});
+					});
+				}
+				
+				rh.cleanContent = function (content) {
+					content = content.replace(/&/g, "&amp;");
+					content = content.replace(/</g, "&lt;");
+					content = content.replace(/>/g, "&gt;");
+					return content;
+				}
+				
+				rh.switchLFToBR = function (content) {
+					return content.replace(/\n/g, "<br />");
+				}
+				
+				rh.updateDisplay = function (ev) {
+					
+					if (ev && ev.keyCode === 13) {
+						ev.preventDefault();
+						ev.stopPropagation();
+					};
+					
+					try {
+						
+						var $contentBox = $("#regex-content-area")
+							,	content = $contentBox.html()
+							,	$replaceBox = $("#regex-replace-area")
+							, $replaceText = $("#regex-replace-string")
+							, regexString = $("#regex-string-builder").val()
+							,	regex = new RegExp()
+							, caseFlag = $("#regex-case-flag")[0].checked ? 'i' : ''
+							,	globalFlag = $("#regex-global-flag")[0].checked ? 'g' : ''
+							, multiFlag = $("#regex-multi-flag")[0].checked ? 'm' : ''
+							,	isWebkit = ~navigator.userAgent.search("WebKit");
+							
+						// convert br's to LF
+						content = content.replace(/<br[^>]*>/g, "\n");
+						// if webkit get rid of all the stuff it puts in
+						if (isWebkit) {
+							content = content.replace(/<span\sclass="Apple-tab[^>]+>([^<]+)<\/span>/g, "$1");
+							content = content.replace(/\t/g, "&nbsp;&nbsp;");
+							content = content.replace(/<div>([^<]+)<\/div>/g, "$1\n");
+						}
+						// push to a dummy span so we can Kill off html entities
+						content = $("<span></span>").html(content).text();
+							
+						// need to put into capture group to add highlights
+						regex.compile(
+								regexString
+							, caseFlag + globalFlag + multiFlag
+						);
+						
+						// may need the content at this state if in replace mode
+						replaceContent = content;
+						
+						// add new highlights
+						if (regexString.length)
+							content = content.replace(regex, "<rhtext>$&</rhtext>");
+						// encode tags
+						content = rh.cleanContent(content);
+						// decode highlights
+						content = content.replace(/&lt;(\/?rhtext)&gt;/g, "<$1>");
+						content = rh.switchLFToBR(content);
+					
+						// update display with matches
+						$contentBox.html(content);
+						
+						if (mode === "replace") {
+							replaceContent = replaceContent.replace(regex, $replaceText.val());
+							// encode tags
+							replaceContent = rh.cleanContent(replaceContent);
+							replaceContent = rh.switchLFToBR(replaceContent);
+							$replaceBox.html(replaceContent);
+						}
+						
+						// get rid of added newline from first empty txt node
+						tn = $contentBox[0].firstChild;
+						if (tn && tn.nodeName === "BR")
+							$(tn).remove();
+						
+					} catch (ex) {
+						// probably just an unterminated parenthetical in regex - we hope!
+						if (console && "log" in console)
+							console.log(ex.message, ex);
+					}
+				}
+				
+				$(function () {
+					$(".regex-string-field, #regex-content-area").keyup(rh.updateDisplay);
+					$(".regex-flag").click(rh.updateDisplay);
+					$(".regex-mode-switch").click(rh.setMode);
+					rh.updateDisplay(null);
+				});
+				
+			})(jQuery);
+		</script>
+	</body>
+</html>
